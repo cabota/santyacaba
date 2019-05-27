@@ -16,6 +16,9 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 /**
  *
@@ -27,6 +30,7 @@ static ArrayList<String>listEstaciones;
 static ArrayList<String[]>idpro;
 static ArrayList<String[]>datos;
  Provincia p5;
+ static JTable jTable1 = new JTable();
  static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     /**
      * Creates new form Vista
@@ -61,8 +65,6 @@ static ArrayList<String[]>datos;
         btnBuscar = new javax.swing.JButton();
         pnlEnglobaTodoAbajo = new javax.swing.JPanel();
         pnlGraficaGran = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tblDatos = new javax.swing.JTable();
         pnlGenerarGraf = new javax.swing.JPanel();
         pnlContenedorGenerarGraf = new javax.swing.JPanel();
         lblMagnitud = new javax.swing.JLabel();
@@ -159,52 +161,15 @@ static ArrayList<String[]>datos;
 
         pnlGraficaGran.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        tblDatos.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null}
-            },
-            new String [] {
-                "Fecha", "Hora", "Temperatura", "Humedad", "Viento", "Direccion viento", "Nieve", "Lluvia", "Visibilidad"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                true, true, true, true, false, true, true, true, true
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jScrollPane1.setViewportView(tblDatos);
-
         javax.swing.GroupLayout pnlGraficaGranLayout = new javax.swing.GroupLayout(pnlGraficaGran);
         pnlGraficaGran.setLayout(pnlGraficaGranLayout);
         pnlGraficaGranLayout.setHorizontalGroup(
             pnlGraficaGranLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 519, Short.MAX_VALUE)
-            .addGroup(pnlGraficaGranLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(pnlGraficaGranLayout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 495, Short.MAX_VALUE)
-                    .addContainerGap()))
         );
         pnlGraficaGranLayout.setVerticalGroup(
             pnlGraficaGranLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 445, Short.MAX_VALUE)
-            .addGroup(pnlGraficaGranLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlGraficaGranLayout.createSequentialGroup()
-                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+            .addGap(0, 449, Short.MAX_VALUE)
         );
 
         pnlGenerarGraf.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -355,6 +320,8 @@ static ArrayList<String[]>datos;
             
             try {
                 Obtenerdatos(cmbEstacion.getSelectedItem().toString(), txtDataInici.getText(), txtDataFin.getText());
+                
+                
             } catch (ParseException ex) {
                 Logger.getLogger(Vista.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
@@ -473,6 +440,7 @@ static ArrayList<String[]>datos;
                            Date fechadoc=sdf.parse(dat[1].replaceAll("\"", ""));
                            if(comprobarfecha(fechain,fechafi,fechadoc)){
                                datos.add(dat);
+                               
                            }
                            
                         
@@ -489,8 +457,10 @@ static ArrayList<String[]>datos;
 
                    
                }else{
+                    ListarTabla(jTable1, datos);
                    eof=true;
                }
+              
                
                
            }
@@ -574,6 +544,45 @@ static ArrayList<String[]>datos;
                     return false;
             }
     }
+    
+    public static void ListarTabla(JTable tabla ,ArrayList<String[]> dat){
+    DefaultTableModel modeloTabla= new DefaultTableModel();
+    tabla.setModel(modeloTabla);
+
+    modeloTabla.addColumn("FECHA");
+    modeloTabla.addColumn("HORA");
+    modeloTabla.addColumn("temperatura");
+    modeloTabla.addColumn("Humedad");
+    modeloTabla.addColumn("Viento");
+    modeloTabla.addColumn("Direccion viento");
+     modeloTabla.addColumn("Nieve");
+      modeloTabla.addColumn("Lluvia");
+       modeloTabla.addColumn("Visibilidad");
+    
+
+    Object[] columna= new Object[9];
+
+    int objGuardados= dat.size();
+    
+    for (int i = 0; i < objGuardados; i++) {
+        String[] datpro = dat.get(i);
+        System.out.println(datpro[i]);
+        String[] fechashora= datpro[1].split(" ");
+        columna[0]= fechashora[0];
+        columna[1]= fechashora[1];
+        columna[2]= datpro[10];
+        columna[3]= datpro[7];
+        columna[4]= datpro[4];
+        columna[5]= datpro[6];
+        columna[6]= datpro[14];
+        columna[7]= datpro[3];
+        columna[8]= datpro[13];
+        
+
+        modeloTabla.addRow(columna);
+     }
+   }
+
   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -582,7 +591,6 @@ static ArrayList<String[]>datos;
     private static javax.swing.JComboBox<String> cmbEstacion;
     private static javax.swing.JComboBox<String> cmbListProvincias;
     private javax.swing.JComboBox<String> cmbMagnitud;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblDataFin;
     private javax.swing.JLabel lblDataInici;
     private javax.swing.JLabel lblEstacion;
@@ -593,7 +601,6 @@ static ArrayList<String[]>datos;
     private javax.swing.JPanel pnlEnglobaTodoAbajo;
     private javax.swing.JPanel pnlGenerarGraf;
     private javax.swing.JPanel pnlGraficaGran;
-    private javax.swing.JTable tblDatos;
     private javax.swing.JTextField txtDataFin;
     private javax.swing.JTextField txtDataInici;
     // End of variables declaration//GEN-END:variables
